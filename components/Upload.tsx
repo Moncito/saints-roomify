@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {useOutletContext} from "react-router";
 import {CheckCircle2, ImageIcon, UploadIcon} from "lucide-react";
 import {PROGRESS_INCREMENT, REDIRECT_DELAY_MS, PROGRESS_INTERVAL_MS} from "../lib/constants";
+import type { AuthContext } from '../app/root';
 
 interface UploadProps {
     onComplete?: (base64Data: string) => void;
@@ -11,10 +12,14 @@ const Upload = ({ onComplete }: UploadProps) => {
     const [file, setFile] = useState<File | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [error, setError] = useState<string | null>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const { isSignedIn } = useOutletContext<AuthContext>();
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB in bytes
 
     useEffect(() => {
         return () => {
@@ -77,23 +82,44 @@ const Upload = ({ onComplete }: UploadProps) => {
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
+        setError(null);
 
         if (!isSignedIn) return;
 
         const droppedFile = e.dataTransfer.files[0];
-        const allowedTypes = ['image/jpeg', 'image/png'];
-        if (droppedFile && allowedTypes.includes(droppedFile.type)) {
-            processFile(droppedFile);
+        if (!droppedFile) return;
+
+        if (!allowedTypes.includes(droppedFile.type)) {
+            setError('Unsupported file type. Please use JPEG, PNG, or WebP.');
+            return;
         }
+
+        if (droppedFile.size > MAX_FILE_SIZE) {
+            setError(`File is too large. Maximum size is 50 MB (${(droppedFile.size / 1024 / 1024).toFixed(1)} MB selected).`);
+            return;
+        }
+
+        processFile(droppedFile);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!isSignedIn) return;
+        setError(null);
 
         const selectedFile = e.target.files?.[0];
-        if (selectedFile) {
-            processFile(selectedFile);
+        if (!selectedFile) return;
+
+        if (!allowedTypes.includes(selectedFile.type)) {
+            setError('Unsupported file type. Please use JPEG, PNG, or WebP.');
+            return;
         }
+
+        if (selectedFile.size > MAX_FILE_SIZE) {
+            setError(`File is too large. Maximum size is 50 MB (${(selectedFile.size / 1024 / 1024).toFixed(1)} MB selected).`);
+            return;
+        }
+
+        processFile(selectedFile);
     };
 
     return (
@@ -122,7 +148,11 @@ const Upload = ({ onComplete }: UploadProps) => {
                                 "Click to upload or just drag and drop"
                             ): ("Sign in or sign up with Puter to upload")}
                         </p>
-                        <p className="help">Maximum file size 50 MB.</p>
+                        {error ? (
+                            <p className="help" style={{ color: '#ef4444' }}>{error}</p>
+                        ) : (
+                            <p className="help">Maximum file size 50 MB.</p>
+                        )}
                     </div>
                 </div>
             ) : (
