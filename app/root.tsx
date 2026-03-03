@@ -9,6 +9,22 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import type { Auth } from "@heyputer/puter.js";
+import { use } from "react";
+import { useEffect, useState } from "react";
+import { getCurrentUser, signIn as puterSignIn, signOut as puterSignOut,} from "lib/puter.action";
+
+export interface AuthState {
+  isSignedIn: boolean;
+  userName: string | null;
+  userId: string | null;
+}
+
+export type AuthContext = AuthState & {
+  refreshAuth: () => Promise<boolean>;
+  signIn: () => Promise<boolean>;
+  signOut: () => Promise<boolean>;
+};
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -41,8 +57,51 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+const DEFAULT_AUTH_STATE : AuthState = {
+  isSignedIn: false,
+  userName: null,
+  userId: null,
+}
+
 export default function App() {
-  return <Outlet />;
+    const [authState, setAuthState] = useState<AuthState>(DEFAULT_AUTH_STATE);
+
+    const refreshAuth = async () => {
+      try {
+          const user = await getCurrentUser();
+
+        setAuthState({
+          isSignedIn: !!  user,
+          userName: user?.username || null,
+          userId: user?.uuid || null,
+        });
+
+        return !!user;
+      }catch(error) {
+        setAuthState(DEFAULT_AUTH_STATE);
+        return false
+      }
+    }
+
+    useEffect(() => {
+      refreshAuth();
+    }, []);
+
+    const signIn = async () => {
+      await puterSignIn();
+      return await refreshAuth();
+    }
+
+    const signOut = async () => {
+      puterSignOut();
+      return await refreshAuth();
+    }
+  return(
+    <main>
+        <Outlet context={{...authState, refreshAuth, signIn, signOut}} />
+    </main>
+  ) 
+  
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
