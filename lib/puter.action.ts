@@ -15,7 +15,7 @@ export const getCurrentUser = async () => {
     }
 }
 
-export const createProject = async ({item}: CreateProjectParams):
+export const createProject = async ({ item, visibility = "private" }: CreateProjectParams):
 Promise<DesignItem | null | undefined > =>{
     const projectId = item.id
 
@@ -56,6 +56,7 @@ Promise<DesignItem | null | undefined > =>{
 
     const payload = {
         ...rest,
+        isPublic: visibility === "public",
         sourceImage: resolvedSource,
         renderedImage: resolvedRender,
     }
