@@ -22,24 +22,25 @@ Whether you're an architect, interior designer, or homeowner, Roomify bridges th
 
 ## 🚀 Features
 
-| Feature | Description |
-|---|---|
-| 📸 **Floor Plan Upload** | Drag-and-drop or click to upload JPG, PNG, or WebP images up to 50 MB |
-| 🤖 **AI Rendering** | One-click conversion to photorealistic 3D top-down renders via Google Gemini 2.5 Flash |
-| 👁️ **Before / After Slider** | Interactive comparison view to inspect original and rendered images side by side |
-| 💾 **Project Management** | Create, save, list, and reload design projects at any time |
-| 👤 **Authentication** | Secure sign-in / sign-out powered by Puter.js |
-| 🌐 **Auto-Hosting** | Generated renders are automatically hosted on a public Puter subdomain |
-| ⬇️ **Export** | Download any rendered image as a PNG file with one click |
-| ⚡ **SSR + HMR** | Server-side rendering with instant hot module replacement in development |
-| 🔒 **Type-Safe** | Fully written in TypeScript with strict mode enabled |
-| 📱 **Responsive UI** | Clean, modern interface built with TailwindCSS |
+| Feature                      | Description                                                                            |
+| ---------------------------- | -------------------------------------------------------------------------------------- |
+| 📸 **Floor Plan Upload**     | Drag-and-drop or click to upload JPG, PNG, or WebP images up to 50 MB                  |
+| 🤖 **AI Rendering**          | One-click conversion to photorealistic 3D top-down renders via Google Gemini 2.5 Flash |
+| 👁️ **Before / After Slider** | Interactive comparison view to inspect original and rendered images side by side       |
+| 💾 **Project Management**    | Create, save, list, and reload design projects at any time                             |
+| 👤 **Authentication**        | Secure sign-in / sign-out powered by Puter.js                                          |
+| 🌐 **Auto-Hosting**          | Generated renders are automatically hosted on a public Puter subdomain                 |
+| ⬇️ **Export**                | Download any rendered image as a PNG file with one click                               |
+| ⚡ **SSR + HMR**             | Server-side rendering with instant hot module replacement in development               |
+| 🔒 **Type-Safe**             | Fully written in TypeScript with strict mode enabled                                   |
+| 📱 **Responsive UI**         | Clean, modern interface built with TailwindCSS                                         |
 
 ---
 
 ## 🧰 Tech Stack
 
 ### Frontend
+
 - **[React 19](https://react.dev/)** — UI component framework
 - **[React Router 7](https://reactrouter.com/)** — Full-stack routing with SSR
 - **[TypeScript 5](https://www.typescriptlang.org/)** — Static type safety
@@ -48,15 +49,18 @@ Whether you're an architect, interior designer, or homeowner, Roomify bridges th
 - **[React Compare Slider](https://react-compare-slider.vercel.app/)** — Before/after image comparison component
 
 ### Backend & Cloud
+
 - **[Node.js 20](https://nodejs.org/)** — Server runtime
 - **[Puter.js](https://puter.com/)** — Cloud OS SDK (auth, file system, KV store, hosting, workers)
 - **[Puter Workers](https://docs.puter.com/)** — Serverless worker for project API endpoints
 
 ### AI / Machine Learning
+
 - **[Google Gemini 2.5 Flash](https://deepmind.google/technologies/gemini/)** — Image-to-image generation model
 - **Puter AI API** — `txt2img` wrapper exposing Gemini capabilities
 
 ### Build & Infrastructure
+
 - **[Vite 7](https://vitejs.dev/)** — Lightning-fast build tool and dev server
 - **[Docker](https://www.docker.com/)** — Multi-stage container build for production
 
@@ -179,14 +183,14 @@ The Docker image uses a **multi-stage build** (Alpine-based Node 20) to keep the
 
 ### Supported Deployment Platforms
 
-| Platform | Notes |
-|---|---|
-| **AWS ECS** | Deploy the Docker image via ECR |
-| **Google Cloud Run** | Fully managed, scales to zero |
-| **Azure Container Apps** | Serverless container hosting |
-| **DigitalOcean App Platform** | Simple Git-based deploys |
-| **Fly.io** | Global edge deployment |
-| **Railway** | One-click Docker deploy |
+| Platform                      | Notes                           |
+| ----------------------------- | ------------------------------- |
+| **AWS ECS**                   | Deploy the Docker image via ECR |
+| **Google Cloud Run**          | Fully managed, scales to zero   |
+| **Azure Container Apps**      | Serverless container hosting    |
+| **DigitalOcean App Platform** | Simple Git-based deploys        |
+| **Fly.io**                    | Global edge deployment          |
+| **Railway**                   | One-click Docker deploy         |
 
 ---
 
@@ -194,24 +198,24 @@ The Docker image uses a **multi-stage build** (Alpine-based Node 20) to keep the
 
 Project data is managed through a **Puter Worker** that exposes three endpoints:
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/projects/save` | Create or update a design project |
-| `GET` | `/api/projects/list` | List all projects for the authenticated user |
-| `GET` | `/api/projects/get?id=<id>` | Fetch a specific project by ID |
+| Method | Endpoint                    | Description                                  |
+| ------ | --------------------------- | -------------------------------------------- |
+| `POST` | `/api/projects/save`        | Create or update a design project            |
+| `GET`  | `/api/projects/list`        | List all projects for the authenticated user |
+| `GET`  | `/api/projects/get?id=<id>` | Fetch a specific project by ID               |
 
 ### Puter Services Used
 
 ```typescript
-puter.auth.signIn()         // Authenticate the user
-puter.auth.signOut()        // Sign out the user
-puter.auth.getUser()        // Get current user info
-puter.ai.txt2img()          // Run AI image generation (Gemini)
-puter.fs.write()            // Write files to cloud storage
-puter.fs.mkdir()            // Create directories
-puter.kv.get() / kv.set()   // Key-value storage
-puter.hosting.create()      // Publish a hosted subdomain
-puter.workers.exec()        // Execute serverless worker functions
+puter.auth.signIn(); // Authenticate the user
+puter.auth.signOut(); // Sign out the user
+puter.auth.getUser(); // Get current user info
+puter.ai.txt2img(); // Run AI image generation (Gemini)
+puter.fs.write(); // Write files to cloud storage
+puter.fs.mkdir(); // Create directories
+puter.kv.get() / kv.set(); // Key-value storage
+puter.hosting.create(); // Publish a hosted subdomain
+puter.workers.exec(); // Execute serverless worker functions
 ```
 
 ---
@@ -245,12 +249,12 @@ User can compare, share, or download the rendered image
 
 ## 🔑 Key Configuration
 
-| Constant | Value | Description |
-|---|---|---|
-| `IMAGE_RENDER_DIMENSION` | `1024` | Output render resolution (px) |
-| `HOSTING_DOMAIN_SUFFIX` | `*.puter.site` | Auto-hosting domain suffix |
-| `REDIRECT_DELAY_MS` | `600` | Redirect timing after save (ms) |
-| `SHARE_STATUS_RESET_DELAY_MS` | `1500` | Share button feedback duration (ms) |
+| Constant                      | Value          | Description                         |
+| ----------------------------- | -------------- | ----------------------------------- |
+| `IMAGE_RENDER_DIMENSION`      | `1024`         | Output render resolution (px)       |
+| `HOSTING_DOMAIN_SUFFIX`       | `*.puter.site` | Auto-hosting domain suffix          |
+| `REDIRECT_DELAY_MS`           | `600`          | Redirect timing after save (ms)     |
+| `SHARE_STATUS_RESET_DELAY_MS` | `1500`         | Share button feedback duration (ms) |
 
 ---
 
@@ -268,12 +272,12 @@ This runs `react-router typegen` followed by `tsc` to validate all types across 
 
 ## 📦 Scripts Reference
 
-| Script | Command | Description |
-|---|---|---|
-| `dev` | `react-router dev` | Start dev server with HMR |
-| `build` | `react-router build` | Create production build |
-| `start` | `react-router-serve ./build/server/index.js` | Start production server |
-| `typecheck` | `react-router typegen && tsc` | Type generation + validation |
+| Script      | Command                                      | Description                  |
+| ----------- | -------------------------------------------- | ---------------------------- |
+| `dev`       | `react-router dev`                           | Start dev server with HMR    |
+| `build`     | `react-router build`                         | Create production build      |
+| `start`     | `react-router-serve ./build/server/index.js` | Start production server      |
+| `typecheck` | `react-router typegen && tsc`                | Type generation + validation |
 
 ---
 
