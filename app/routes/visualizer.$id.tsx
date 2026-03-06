@@ -4,7 +4,7 @@ import {generate3DView} from "../../lib/ai.action";
 import {Box, Download, RefreshCcw, Share2, X} from "lucide-react";
 import Button from "../../components/ui/Button";
 import {createProject, getProjectById} from "../../lib/puter.action";
-// import {ReactCompareSlider, ReactCompareSliderImage} from "react-compare-slider";
+import {ReactCompareSlider, ReactCompareSliderImage} from "react-compare-slider";
 
 const VisualizerId = () => {
     const { id } = useParams();
@@ -181,7 +181,7 @@ const VisualizerId = () => {
                         <div className="hint">Drag to compare</div>
                     </div>
 
-                    {/* <div className="compare-stage">
+                    <div className="compare-stage">
                         {project?.sourceImage && currentImage ? (
                             <ReactCompareSlider
                                 defaultValue={50}
@@ -200,7 +200,7 @@ const VisualizerId = () => {
                                 )}
                             </div>
                         )}
-                    </div> */}
+                    </div>
                 </div>
             </section>
         </div>
