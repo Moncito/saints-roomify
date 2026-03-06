@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm install && ./node_modules/.bin/react-router build",
+  "outputDirectory": "build/client",
+  "installCommand": "npm install"
+}
