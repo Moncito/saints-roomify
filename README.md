@@ -281,6 +281,147 @@ This runs `react-router typegen` followed by `tsc` to validate all types across 
 
 ---
 
+## 🚀 SaaS Upgrade Roadmap
+
+The sections below describe exactly what needs to be built — and in what order — to evolve Roomify from an experimental single-user app into a commercially viable SaaS product. The core rendering and Puter integration code is **unchanged**; each phase layers new capability on top.
+
+### Current State (v0 — Experimental)
+
+| Area | Status | Notes |
+|------|--------|-------|
+| AI rendering (Gemini) | ✅ Working | Via Puter AI API |
+| Cloud storage (Puter FS) | ✅ Working | Puter filesystem & KV store |
+| Authentication (Puter) | ✅ Working | Puter OAuth modal |
+| Project management | ✅ Working | KV-backed CRUD via Puter Worker |
+| Subscription / billing | ❌ Missing | No payment gateway |
+| Usage limits / quotas | ❌ Missing | No per-user enforcement |
+| Database | ❌ Missing | Data lives entirely in Puter KV |
+| Admin panel | ❌ Missing | No visibility into users or revenue |
+| Team collaboration | ❌ Missing | Projects are single-user only |
+| Custom domains / white-label | ❌ Missing | — |
+
+---
+
+### Phase 1 — Billing Foundation (Stripe)
+
+> **Goal:** Charge users for Pro and Enterprise tiers. No feature gating yet — just the payment plumbing.
+
+**What to build:**
+
+1. **Stripe account & products** — Create three products (Free / Pro / Enterprise) in the Stripe dashboard. Add the generated Price IDs to `lib/plans.ts` (`stripeMonthlyPriceId` / `stripeYearlyPriceId`).
+2. **Checkout session endpoint** — A server route (`POST /api/billing/checkout`) that calls `stripe.checkout.sessions.create()` and returns the checkout URL. Redirect the user to Stripe's hosted checkout page.
+3. **Customer portal endpoint** — A server route (`POST /api/billing/portal`) to let subscribers manage their plan and payment method via Stripe's hosted portal.
+4. **Webhook handler** — A server route (`POST /api/billing/webhook`) that verifies the Stripe signature and handles `checkout.session.completed`, `customer.subscription.updated`, and `customer.subscription.deleted` events. Write the subscription state to the database.
+5. **Pricing page** — A new route (`/pricing`) that renders the three plans from `lib/plans.ts` with a "Get started" / "Upgrade" CTA button for each paid tier.
+
+**New environment variables (see `.env.example`):**
+```
+STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+VITE_STRIPE_PUBLISHABLE_KEY
+```
+
+**Recommended libraries:** `stripe` (server), `@stripe/stripe-js` (client)
+
+---
+
+### Phase 2 — Database & Persistent User Records
+
+> **Goal:** Move from Puter KV (ephemeral, per-user cloud) to a real database so you can query across users, enforce limits, and build an admin panel.
+
+**What to build:**
+
+1. **Choose a database** — Supabase (PostgreSQL + auth) or Neon (serverless Postgres) are the simplest choices for a React Router / SSR app. Add `DATABASE_URL` to your environment.
+2. **Schema** — At minimum, create three tables:
+   - `users` — `id`, `puter_user_id`, `email`, `created_at`
+   - `subscriptions` — mirrors the `UserSubscription` type in `type.d.ts`
+   - `usage_records` — mirrors the `UsageRecord` type in `type.d.ts`
+3. **ORM setup** — Add [Drizzle ORM](https://orm.drizzle.team/) or [Prisma](https://www.prisma.io/) and generate the client.
+4. **Sync on sign-in** — After a successful Puter sign-in, upsert the user row and seed a `usage_record` for the current period.
+
+---
+
+### Phase 3 — Usage Limits & Feature Gating
+
+> **Goal:** Enforce the per-plan limits defined in `lib/plans.ts` so that Free users cannot generate unlimited renders.
+
+**What to build:**
+
+1. **Usage increment** — After every successful AI render, increment `usage_records.renders_this_period` for the user.
+2. **Gate the render button** — Before calling `generate3DView()`, check whether `isWithinLimit(usage.rendersThisPeriod, plan.limits.rendersPerMonth)` (helper already in `lib/plans.ts`). If the limit is exceeded, show an "Upgrade to Pro" modal instead of triggering the AI call.
+3. **Gate project creation** — Check `projectCount` against `plan.limits.projectCount` before calling `createProject()`.
+4. **Storage quota** — Track `storageBytesUsed` when uploading to Puter hosting and block uploads that would exceed `plan.limits.storageGB`.
+5. **Usage dashboard widget** — Add a small "X of Y renders used" progress bar to the navbar or home page so users can see their current consumption.
+
+---
+
+### Phase 4 — Auth Upgrade (optional)
+
+> **Goal:** Replace Puter's OAuth modal with a standard email/password + social login flow so you own the user identity layer.
+
+**Options (choose one):**
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **[Clerk](https://clerk.com/)** | Drop-in React components, no DB needed | Monthly active user pricing |
+| **[Auth.js (NextAuth v5)](https://authjs.dev/)** | Open-source, works with React Router | More setup |
+| **[Supabase Auth](https://supabase.com/auth)** | Free tier, integrates with Supabase DB | Vendor lock-in |
+| **[Lucia](https://lucia-auth.com/)** | Lightweight, database-agnostic | Manual UI work |
+
+**Migration path:** Keep Puter auth working in parallel while you build the new flow. Flip a feature flag (`VITE_ENABLE_NEW_AUTH`) when ready.
+
+---
+
+### Phase 5 — Team Collaboration
+
+> **Goal:** Let Pro/Enterprise users share projects with team members.
+
+**What to build:**
+
+1. **Workspace model** — Add `workspaces` and `workspace_members` tables.
+2. **Invite flow** — Email invitation via the transactional mail service (see `.env.example`).
+3. **Shared project view** — Projects owned by a workspace are visible to all members.
+4. **Role-based access** — `owner`, `editor`, `viewer` roles per workspace.
+
+---
+
+### Phase 6 — Admin Panel
+
+> **Goal:** Give you (the operator) visibility into users, revenue, and support requests.
+
+**What to build:**
+
+1. **Protected `/admin` route** — Server-side role check (`role === "admin"`).
+2. **User table** — List all users, their plan, usage, and subscription status.
+3. **Revenue metrics** — MRR, churn, new subscribers (can use Stripe's dashboard or embed charts).
+4. **Impersonation / support tools** — Temporarily view the app as a specific user.
+
+**Recommended library:** [Tremor](https://tremor.so/) or [shadcn/ui](https://ui.shadcn.com/) for admin UI components.
+
+---
+
+### Recommended SaaS Tech Additions
+
+```
+Current stack          Recommended addition          Purpose
+─────────────────────  ────────────────────────────  ──────────────────────────────
+Puter KV               PostgreSQL (Neon / Supabase)  Persistent, queryable data
+Puter Auth             Clerk or Auth.js              Owned identity layer
+—                      Stripe                        Subscriptions & payments
+—                      Resend / Postmark             Transactional email
+—                      Drizzle ORM / Prisma          Type-safe DB queries
+—                      shadcn/ui or Tremor           Admin & dashboard UI
+—                      Sentry                        Error monitoring
+—                      PostHog                       Product analytics & feature flags
+```
+
+> **Files already added as part of this upgrade:**
+> - `.env.example` — all current + future SaaS environment variables
+> - `lib/plans.ts` — subscription tier definitions with limits and Stripe price ID slots
+> - `type.d.ts` — added `UserSubscription`, `UsageRecord`, `UserPlanContext`, and related types
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Here's how to get started:

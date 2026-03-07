@@ -125,3 +125,65 @@ interface Generate3DViewParams {
     sourceImage: string;
     projectId?: string | null;
 }
+
+// ─── SaaS — Subscription & Usage ─────────────────────────────────────────────
+
+/** Mirrors the plan IDs defined in lib/plans.ts. */
+type PlanId = "free" | "pro" | "enterprise";
+
+/** Billing interval for a paid subscription. */
+type BillingInterval = "monthly" | "yearly";
+
+/** Subscription status values aligned with Stripe's subscription statuses. */
+type SubscriptionStatus =
+    | "active"
+    | "trialing"
+    | "past_due"
+    | "canceled"
+    | "unpaid"
+    | "incomplete"
+    | "incomplete_expired"
+    | "paused";
+
+/**
+ * Persisted subscription record for a user.
+ * Populated from the database once billing is integrated.
+ */
+interface UserSubscription {
+    userId: string;
+    planId: PlanId;
+    status: SubscriptionStatus;
+    interval: BillingInterval;
+    /** ISO-8601 timestamp of the current period start. */
+    currentPeriodStart: string;
+    /** ISO-8601 timestamp of the current period end. */
+    currentPeriodEnd: string;
+    /** Stripe subscription ID for webhook reconciliation. */
+    stripeSubscriptionId?: string | null;
+    /** Stripe customer ID. */
+    stripeCustomerId?: string | null;
+}
+
+/**
+ * Tracks how much of a metered resource a user has consumed in the
+ * current billing period.
+ */
+interface UsageRecord {
+    userId: string;
+    /** Number of AI renders generated this billing period. */
+    rendersThisPeriod: number;
+    /** Total cloud storage used in bytes. */
+    storageBytesUsed: number;
+    /** Total number of saved projects. */
+    projectCount: number;
+    /** ISO-8601 timestamp of the last update. */
+    updatedAt: string;
+}
+
+/** Convenience bundle passed to UI components that need plan + usage context. */
+interface UserPlanContext {
+    subscription: UserSubscription | null;
+    usage: UsageRecord | null;
+    /** True when the user has an active (or trialing) paid subscription. */
+    isPaid: boolean;
+}
