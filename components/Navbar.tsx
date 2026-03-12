@@ -4,7 +4,7 @@ import { useOutletContext, useNavigate, useLocation } from 'react-router';
 import type { AuthContext } from '../app/root';
 
 const Navbar = () => {
-  const { isSignedIn, userName, signIn, signOut } = useOutletContext<AuthContext>();
+  const { isSignedIn, userName, signIn, signOut, openUpload } = useOutletContext<AuthContext>();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -34,17 +34,18 @@ const Navbar = () => {
 
   const navLinks = [
     { label: 'Explore', href: '/explore', icon: Compass },
-    { label: 'Feed',    href: '/#feed',   icon: Rss     },
+    { label: 'Feed',    href: '/feed',    icon: Rss     },
     { label: 'Tags',    href: '/tags',    icon: Tag     },
   ];
 
-  const isActive = (href: string) => location.pathname === href.split('#')[0];
+  const isActive = (href: string) => location.pathname === href;
 
   return (
     <>
-      {/* ── Desktop / Top navbar ── */}
+      {/* ── Desktop top navbar ── */}
       <header className="navbar">
         <nav className="inner">
+
           <div className="left">
             <button className="brand" onClick={() => navigate('/')} aria-label="Go home">
               <Box className="logo" />
@@ -66,10 +67,11 @@ const Navbar = () => {
           <div className="actions">
             {isSignedIn ? (
               <>
-                <a href="#upload" className="upload-btn">
+                {/* Upload — opens global modal, no href needed */}
+                <button className="upload-btn" onClick={openUpload}>
                   <Upload size={13} strokeWidth={2} />
                   Upload
-                </a>
+                </button>
 
                 <div className="avatar-wrapper" ref={dropdownRef}>
                   <button
@@ -122,11 +124,14 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <button className="signin-btn" onClick={handleSignIn}>Sign In</button>
-                <a href="#upload" className="upload-btn">
+                <button className="signin-btn" onClick={handleSignIn}>
+                  Sign In
+                </button>
+                {/* Even logged-out users can click Upload — openUpload handles sign-in first */}
+                <button className="upload-btn" onClick={openUpload}>
                   <Upload size={13} strokeWidth={2} />
                   Upload
-                </a>
+                </button>
               </>
             )}
           </div>
@@ -146,15 +151,15 @@ const Navbar = () => {
           </a>
         ))}
 
-        {/* Upload tab — always orange */}
-        <a href="#upload" className="mobile-tab mobile-tab--upload">
+        {/* Upload — opens modal */}
+        <button className="mobile-tab mobile-tab--upload" onClick={openUpload}>
           <div className="mobile-upload-pill">
             <Upload size={18} strokeWidth={2.2} />
           </div>
           <span>Upload</span>
-        </a>
+        </button>
 
-        {/* Profile / Sign in tab */}
+        {/* Profile or Sign In */}
         {isSignedIn ? (
           <button
             className="mobile-tab"

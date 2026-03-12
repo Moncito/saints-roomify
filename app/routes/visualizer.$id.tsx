@@ -9,60 +9,68 @@ import {ReactCompareSlider, ReactCompareSliderImage} from "react-compare-slider"
 const VisualizerId = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { userId } = useOutletContext<AuthContext>()
+    const { userId } = useOutletContext<AuthContext>();
 
     const hasInitialGenerated = useRef(false);
 
     const [project, setProject] = useState<DesignItem | null>(null);
     const [isProjectLoading, setIsProjectLoading] = useState(true);
-
     const [isProcessing, setIsProcessing] = useState(false);
     const [currentImage, setCurrentImage] = useState<string | null>(null);
 
     const handleBack = () => navigate('/');
+
     const handleExport = () => {
         if (!currentImage) return;
-
         const link = document.createElement('a');
         link.href = currentImage;
         link.download = `roomify-${id || 'design'}.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    }
+    };
 
     const runGeneration = async (item: DesignItem) => {
-        if(!id || !item.sourceImage) return;
+        if (!id || !item.sourceImage) return;
 
         try {
             setIsProcessing(true);
             const result = await generate3DView({ sourceImage: item.sourceImage });
 
-            if(result.renderedImage) {
+            if (result.renderedImage) {
                 setCurrentImage(result.renderedImage);
 
-                const updatedItem = {
+                const updatedItem: DesignItem = {
                     ...item,
                     renderedImage: result.renderedImage,
-                    renderedPath: result.renderedPath,
-                    timestamp: Date.now(),
-                    ownerId: item.ownerId ?? userId ?? null,
+                    renderedPath:  result.renderedPath,
+                    timestamp:     Date.now(),
+                    ownerId:       item.ownerId ?? userId ?? null,
+                    // Preserve whatever visibility the project was uploaded with.
+                    // If it was uploaded as public (via UploadModal), keep it public
+                    // so the completed render appears in the community feed.
                     isPublic: item.isPublic ?? false,
-                }
+                };
 
-                const saved = await createProject({ item: updatedItem, visibility: "private" })
+                // ── KEY FIX ──────────────────────────────────────────────────
+                // Use the same visibility the project was originally uploaded with.
+                // Previously this was hardcoded to "private" which meant the
+                // completed render was NEVER written to the public feed index.
+                const visibility = item.isPublic ? "public" : "private";
 
-                if(saved) {
+                const saved = await createProject({ item: updatedItem, visibility });
+
+                if (saved) {
                     setProject(saved);
                     setCurrentImage(saved.renderedImage || result.renderedImage);
                 }
             }
         } catch (error) {
-            console.error('Generation failed: ', error)
+            console.error('Generation failed:', error);
         } finally {
             setIsProcessing(false);
         }
-    }
+    };
 
     useEffect(() => {
         let isMounted = true;
@@ -87,9 +95,7 @@ const VisualizerId = () => {
 
         loadProject();
 
-        return () => {
-            isMounted = false;
-        };
+        return () => { isMounted = false; };
     }, [id]);
 
     useEffect(() => {
@@ -97,8 +103,7 @@ const VisualizerId = () => {
             isProjectLoading ||
             hasInitialGenerated.current ||
             !project?.sourceImage
-        )
-            return;
+        ) return;
 
         if (project.renderedImage) {
             setCurrentImage(project.renderedImage);
@@ -115,7 +120,6 @@ const VisualizerId = () => {
             <nav className="topbar">
                 <div className="brand">
                     <Box className="logo" />
-
                     <span className="name">Roomify</span>
                 </div>
                 <Button variant="ghost" size="sm" onClick={handleBack} className="exit">
@@ -148,13 +152,13 @@ const VisualizerId = () => {
                         </div>
                     </div>
 
-                    <div className={`render-area ${isProcessing ? 'is-processing': ''}`}>
+                    <div className={`render-area ${isProcessing ? 'is-processing' : ''}`}>
                         {currentImage ? (
                             <img src={currentImage} alt="AI Render" className="render-img" />
                         ) : (
                             <div className="render-placeholder">
                                 {project?.sourceImage && (
-                                    <img src={project?.sourceImage} alt="Original" className="render-fallback" />
+                                    <img src={project.sourceImage} alt="Original" className="render-fallback" />
                                 )}
                             </div>
                         )}
@@ -169,7 +173,6 @@ const VisualizerId = () => {
                             </div>
                         )}
                     </div>
-
                 </div>
 
                 <div className="panel compare">
@@ -187,10 +190,18 @@ const VisualizerId = () => {
                                 defaultValue={50}
                                 style={{ width: '100%', height: 'auto' }}
                                 itemOne={
-                                    <ReactCompareSliderImage src={project?.sourceImage} alt="before" className="compare-img" />
+                                    <ReactCompareSliderImage
+                                        src={project.sourceImage}
+                                        alt="before"
+                                        className="compare-img"
+                                    />
                                 }
                                 itemTwo={
-                                    <ReactCompareSliderImage src={currentImage || project?.renderedImage} alt="after" className="compare-img" />
+                                    <ReactCompareSliderImage
+                                        src={currentImage || project.renderedImage}
+                                        alt="after"
+                                        className="compare-img"
+                                    />
                                 }
                             />
                         ) : (
@@ -204,6 +215,7 @@ const VisualizerId = () => {
                 </div>
             </section>
         </div>
-    )
-}
-export default VisualizerId
+    );
+};
+
+export default VisualizerId;
