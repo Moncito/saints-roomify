@@ -226,6 +226,7 @@ export default function FeedPage() {
     const [votedIds, setVotedIds]       = useState<Set<string>>(new Set());
 
     const loaderRef = useRef<HTMLDivElement>(null);
+    const latestFetchRef = useRef(0);
 
     // ── Fetch ─────────────────────────────────────────────────────────────────
     const fetchFeed = useCallback(async (
@@ -233,11 +234,16 @@ export default function FeedPage() {
         cursorVal?: string,
         append = false,
     ) => {
+        const token = ++latestFetchRef.current;
+
         if (append) setLoadingMore(true);
         else        setLoading(true);
 
         try {
             const result = await getFeed({ sort: sortBy, limit: 24, cursor: cursorVal });
+
+            // Discard stale responses
+            if (token !== latestFetchRef.current) return;
 
             // ── KEY FIX: only keep projects with both images ──────────────────
             const completed = result.projects.filter(
@@ -249,8 +255,10 @@ export default function FeedPage() {
             setCursor(result.nextCursor);
             setHasMore(!!result.nextCursor);
         } finally {
-            if (append) setLoadingMore(false);
-            else        setLoading(false);
+            if (token === latestFetchRef.current) {
+                if (append) setLoadingMore(false);
+                else        setLoading(false);
+            }
         }
     }, []);
 
@@ -282,6 +290,11 @@ export default function FeedPage() {
 
         const wasVoted = votedIds.has(projectId);
 
+        // Capture previous state for rollback
+        const prevVotedIds = new Set(votedIds);
+        const prevProject = projects.find(p => p.id === projectId);
+        const prevUpvotes = prevProject?.upvotes ?? 0;
+
         setVotedIds(prev => {
             const next = new Set(prev);
             wasVoted ? next.delete(projectId) : next.add(projectId);
@@ -305,6 +318,14 @@ export default function FeedPage() {
                 result.voted ? next.add(projectId) : next.delete(projectId);
                 return next;
             });
+        } else {
+            // Rollback on failure
+            setVotedIds(prevVotedIds);
+            setProjects(prev =>
+                prev.map(p =>
+                    p.id === projectId ? { ...p, upvotes: prevUpvotes } : p,
+                ),
+            );
         }
     };
 

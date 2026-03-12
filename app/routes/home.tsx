@@ -3,12 +3,12 @@ import Navbar from "../../components/Navbar";
 import { ArrowRight, ArrowUpRight, Clock, Layers } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Upload from "../../components/Upload";
-import { useNavigate, useOutletContext } from "react-router";
+import { Link, useNavigate, useOutletContext } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { createProject, getProjects } from "../../lib/puter.action";
 import RoomifyIntro from "../../components/RoomifyIntro";
 
-export function meta({}: Route.MetaArgs) {
+export function meta(_args: Route.MetaArgs) {
   return [
     { title: "Roomify | AI-first Design Environment" },
     { name: "description", content: "Welcome to Roomify, your AI-first design environment!" },
@@ -165,10 +165,11 @@ export default function Home() {
 
               {/* Rendered projects — renderedImage is guaranteed here */}
               {!isLoading && renderedProjects.map(({ id, name, renderedImage, timestamp }) => (
-                <div
+                <Link
                   key={id}
+                  to={`/visualizer/${id}`}
                   className="project-card group"
-                  onClick={() => navigate(`/visualizer/${id}`)}
+                  aria-label={`Open project ${name || id}`}
                 >
                   <div className="preview">
                     <img src={renderedImage!} alt={name || "AI Render"} />
@@ -190,7 +191,7 @@ export default function Home() {
                       <ArrowUpRight size={18} />
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
 
               {/* Empty state */}

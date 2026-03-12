@@ -152,5 +152,5 @@ interface FeedCardProps {
     project: DesignItem;
     onUpvote: (id: string) => void;
     onRemix: (project: DesignItem) => void;
-    votedIds: Set<string>;
+    voted: boolean;
 }

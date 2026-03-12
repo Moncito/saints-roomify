@@ -162,30 +162,24 @@ export const getFeed = async ({
     cursor?: string;
 }): Promise<FeedResult> => {
     if (!PUTER_WORKER_URL) {
-        console.warn('Missing VITE_PUTER_WORKER_URL; skipping feed fetch.');
-        return { projects: [], nextCursor: null, total: 0 };
+        throw new Error('Missing VITE_PUTER_WORKER_URL configuration');
     }
 
-    try {
-        const params = new URLSearchParams({ sort, limit: String(limit) });
-        if (cursor) params.set('cursor', cursor);
+    const params = new URLSearchParams({ sort, limit: String(limit) });
+    if (cursor) params.set('cursor', cursor);
 
-        const response = await puter.workers.exec(
-            `${PUTER_WORKER_URL}/api/projects/feed?${params.toString()}`,
-            { method: 'GET' },
-        );
+    const response = await puter.workers.exec(
+        `${PUTER_WORKER_URL}/api/projects/feed?${params.toString()}`,
+        { method: 'GET' },
+    );
 
-        if (!response.ok) {
-            console.error('Failed to fetch feed:', await response.text());
-            return { projects: [], nextCursor: null, total: 0 };
-        }
-
-        const data = (await response.json()) as FeedResult;
-        return data;
-    } catch (e) {
-        console.error('Failed to fetch feed:', e);
-        return { projects: [], nextCursor: null, total: 0 };
+    if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`Feed fetch failed (${response.status}): ${body}`);
     }
+
+    const data = (await response.json()) as FeedResult;
+    return data;
 };
 
 export const upvoteProject = async (projectId: string): Promise<{

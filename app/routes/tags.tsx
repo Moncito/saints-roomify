@@ -1,7 +1,7 @@
 import type { Route } from "./+types/tags";
 import Navbar from "../../components/Navbar";
 
-export function meta({}: Route.MetaArgs) {
+export function meta(_args: Route.MetaArgs) {
   return [{ title: "Tags | Roomify" }];
 }
 

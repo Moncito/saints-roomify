@@ -13,6 +13,8 @@ export default function UploadModal({ onClose }: UploadModalProps) {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isCreatingRef = useRef(false);
+  const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const successTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [isDragging, setIsDragging] = useState(false);
   const [status, setStatus] = useState<UploadStatus>("idle");
@@ -23,7 +25,11 @@ export default function UploadModal({ onClose }: UploadModalProps) {
   // Lock body scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+      if (successTimeoutRef.current) clearTimeout(successTimeoutRef.current);
+    };
   }, []);
 
   // Close on Escape key
@@ -59,7 +65,7 @@ export default function UploadModal({ onClose }: UploadModalProps) {
     setProgress(0);
 
     // Simulate progress — slower to account for hosting upload time
-    const progressInterval = setInterval(() => {
+    progressIntervalRef.current = setInterval(() => {
       setProgress(prev => Math.min(prev + 8, 80));
     }, 150);
 
@@ -93,7 +99,8 @@ export default function UploadModal({ onClose }: UploadModalProps) {
       // We MUST wait for this to finish before navigating so feed gets hosted URLs
       const saved = await createProject({ item: newItem, visibility: "public" });
 
-      clearInterval(progressInterval);
+      clearInterval(progressIntervalRef.current!);
+      progressIntervalRef.current = null;
 
       if (!saved) throw new Error("Failed to save project.");
 
@@ -101,7 +108,7 @@ export default function UploadModal({ onClose }: UploadModalProps) {
       setStatus("success");
 
       // Use saved.id + saved.sourceImage (real hosted URLs, not base64)
-      setTimeout(() => {
+      successTimeoutRef.current = setTimeout(() => {
         onClose();
         navigate(`/visualizer/${saved.id}`, {
           state: {
@@ -113,7 +120,10 @@ export default function UploadModal({ onClose }: UploadModalProps) {
       }, 800);
 
     } catch (err) {
-      clearInterval(progressInterval);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
       setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
       setStatus("error");
     } finally {
@@ -190,6 +200,15 @@ export default function UploadModal({ onClose }: UploadModalProps) {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onClick={() => fileInputRef.current?.click()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label="Upload floor plan — drag and drop or press to browse files"
             >
               <input
                 ref={fileInputRef}

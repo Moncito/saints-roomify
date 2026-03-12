@@ -954,48 +954,6 @@
                     background-size: 60px 60px;
                 }
 
-                /* "View Community Feed" button next to section heading */
-                    .view-feed-btn {
-                        @apply inline-flex items-center gap-1.5;
-                        @apply bg-transparent border border-zinc-200 rounded-lg;
-                        @apply px-4 py-2 text-xs font-semibold text-zinc-500;
-                        @apply cursor-pointer hover:text-black hover:border-zinc-300 hover:bg-zinc-50;
-                        @apply transition-all duration-150;
-                    }
-                    
-                    /* Skeleton cards for loading state */
-                    .project-card--skeleton {
-                        @apply pointer-events-none;
-                    }
-                    
-                    .preview--skeleton {
-                        @apply bg-zinc-100;
-                        aspect-ratio: 4 / 3;
-                        animation: home-shimmer 1.6s ease-in-out infinite;
-                    }
-                    
-                    .skeleton-line {
-                        @apply h-2.5 rounded-full bg-zinc-100 mb-2;
-                        animation: home-shimmer 1.6s ease-in-out infinite;
-                    
-                        &.skeleton-line--wide   { @apply w-3/4; }
-                        &.skeleton-line--narrow { @apply w-1/2; }
-                    }
-                    
-                    @keyframes home-shimmer {
-                        0%, 100% { opacity: 1;   }
-                        50%       { opacity: 0.4; }
-                    }
-                    
-                    /* Empty state CTA button */
-                    .empty-cta {
-                        @apply mt-4 inline-flex items-center gap-2;
-                        @apply bg-primary text-white border-none rounded-lg;
-                        @apply px-5 py-2.5 text-sm font-bold cursor-pointer;
-                        @apply hover:bg-[#EA580C] transition-all duration-150;
-                    }
-                    
-
                 .upload-card {
                     @apply relative w-full max-w-xl bg-white rounded-2xl shadow-xl overflow-hidden border border-zinc-100 p-8 z-10 transition-transform hover:scale-[1.01] duration-500;
 
@@ -1012,6 +970,47 @@
                     }
                 }
             }
+        }
+
+        /* "View Community Feed" button next to section heading */
+        .view-feed-btn {
+            @apply inline-flex items-center gap-1.5;
+            @apply bg-transparent border border-zinc-200 rounded-lg;
+            @apply px-4 py-2 text-xs font-semibold text-zinc-500;
+            @apply cursor-pointer hover:text-black hover:border-zinc-300 hover:bg-zinc-50;
+            @apply transition-all duration-150;
+        }
+
+        /* Skeleton cards for loading state */
+        .project-card--skeleton {
+            @apply pointer-events-none;
+        }
+
+        .preview--skeleton {
+            @apply bg-zinc-100;
+            aspect-ratio: 4 / 3;
+            animation: home-shimmer 1.6s ease-in-out infinite;
+        }
+
+        .skeleton-line {
+            @apply h-2.5 rounded-full bg-zinc-100 mb-2;
+            animation: home-shimmer 1.6s ease-in-out infinite;
+
+            &.skeleton-line--wide   { @apply w-3/4; }
+            &.skeleton-line--narrow { @apply w-1/2; }
+        }
+
+        @keyframes home-shimmer {
+            0%, 100% { opacity: 1;   }
+            50%       { opacity: 0.4; }
+        }
+
+        /* Empty state CTA button */
+        .empty-cta {
+            @apply mt-4 inline-flex items-center gap-2;
+            @apply bg-primary text-white border-none rounded-lg;
+            @apply px-5 py-2.5 text-sm font-bold cursor-pointer;
+            @apply hover:bg-[#EA580C] transition-all duration-150;
         }
 
         .projects {

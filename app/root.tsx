@@ -105,9 +105,13 @@ export default function App() {
   const openUpload = () => {
     // If not signed in, trigger sign in first
     if (!authState.isSignedIn) {
-      signIn().then((success) => {
-        if (success) setIsUploadOpen(true);
-      });
+      signIn()
+        .then((success) => {
+          if (success) setIsUploadOpen(true);
+        })
+        .catch(() => {
+          // Sign-in cancelled or failed — silently ignore
+        });
       return;
     }
     setIsUploadOpen(true);
