@@ -21,10 +21,19 @@ interface DesignItem {
     renderedPath?: string | null;
     publicPath?: string | null;
     timestamp: number;
+    updatedAt?: string | null;
+    // Owner info
     ownerId?: string | null;
+    userId?: string | null;
+    userName?: string | null;       // ← author username shown in feed
+    // Sharing
     sharedBy?: string | null;
     sharedAt?: string | null;
     isPublic?: boolean;
+    // Community
+    upvotes?: number;               // ← upvote count
+    tags?: string[];                // ← style tags e.g. ["minimalist", "japandi"]
+    remixedFrom?: string | null;    // ← original project id if this is a remix
 }
 
 interface DesignConfig {
@@ -92,6 +101,9 @@ type AuthContext = {
     refreshAuth: () => Promise<boolean>;
     signIn: () => Promise<boolean>;
     signOut: () => Promise<boolean>;
+    openUpload: () => void;
+    closeUpload: () => void;
+    isUploadOpen: boolean;
 };
 
 type AuthRequiredModalProps = {
@@ -126,64 +138,19 @@ interface Generate3DViewParams {
     projectId?: string | null;
 }
 
-// ─── SaaS — Subscription & Usage ─────────────────────────────────────────────
+// ─── Community ────────────────────────────────────────────────────────────────
 
-/** Mirrors the plan IDs defined in lib/plans.ts. */
-type PlanId = "free" | "pro" | "enterprise";
+type FeedSort = 'new' | 'hot' | 'top';
 
-/** Billing interval for a paid subscription. */
-type BillingInterval = "monthly" | "yearly";
-
-/** Subscription status values aligned with Stripe's subscription statuses. */
-type SubscriptionStatus =
-    | "active"
-    | "trialing"
-    | "past_due"
-    | "canceled"
-    | "unpaid"
-    | "incomplete"
-    | "incomplete_expired"
-    | "paused";
-
-/**
- * Persisted subscription record for a user.
- * Populated from the database once billing is integrated.
- */
-interface UserSubscription {
-    userId: string;
-    planId: PlanId;
-    status: SubscriptionStatus;
-    interval: BillingInterval;
-    /** ISO-8601 timestamp of the current period start. */
-    currentPeriodStart: string;
-    /** ISO-8601 timestamp of the current period end. */
-    currentPeriodEnd: string;
-    /** Stripe subscription ID for webhook reconciliation. */
-    stripeSubscriptionId?: string | null;
-    /** Stripe customer ID. */
-    stripeCustomerId?: string | null;
+interface FeedResult {
+    projects: DesignItem[];
+    nextCursor: string | null;
+    total: number;
 }
 
-/**
- * Tracks how much of a metered resource a user has consumed in the
- * current billing period.
- */
-interface UsageRecord {
-    userId: string;
-    /** Number of AI renders generated this billing period. */
-    rendersThisPeriod: number;
-    /** Total cloud storage used in bytes. */
-    storageBytesUsed: number;
-    /** Total number of saved projects. */
-    projectCount: number;
-    /** ISO-8601 timestamp of the last update. */
-    updatedAt: string;
-}
-
-/** Convenience bundle passed to UI components that need plan + usage context. */
-interface UserPlanContext {
-    subscription: UserSubscription | null;
-    usage: UsageRecord | null;
-    /** True when the user has an active (or trialing) paid subscription. */
-    isPaid: boolean;
+interface FeedCardProps {
+    project: DesignItem;
+    onUpvote: (id: string) => void;
+    onRemix: (project: DesignItem) => void;
+    voted: boolean;
 }

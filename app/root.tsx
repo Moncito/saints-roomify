@@ -9,10 +9,13 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import type { Auth } from "@heyputer/puter.js";
-import { use } from "react";
 import { useEffect, useState } from "react";
-import { getCurrentUser, signIn as puterSignIn, signOut as puterSignOut,} from "lib/puter.action";
+import {
+  getCurrentUser,
+  signIn as puterSignIn,
+  signOut as puterSignOut,
+} from "../lib/puter.action";
+import UploadModal from "../components/UploadModal";
 
 export interface AuthState {
   isSignedIn: boolean;
@@ -24,6 +27,9 @@ export type AuthContext = AuthState & {
   refreshAuth: () => Promise<boolean>;
   signIn: () => Promise<boolean>;
   signOut: () => Promise<boolean>;
+  openUpload: () => void;
+  closeUpload: () => void;
+  isUploadOpen: boolean;
 };
 
 export const links: Route.LinksFunction = () => [
@@ -57,51 +63,80 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-const DEFAULT_AUTH_STATE : AuthState = {
+const DEFAULT_AUTH_STATE: AuthState = {
   isSignedIn: false,
   userName: null,
   userId: null,
-}
+};
 
 export default function App() {
-    const [authState, setAuthState] = useState<AuthState>(DEFAULT_AUTH_STATE);
+  const [authState, setAuthState] = useState<AuthState>(DEFAULT_AUTH_STATE);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
 
-    const refreshAuth = async () => {
-      try {
-          const user = await getCurrentUser();
+  const refreshAuth = async () => {
+    try {
+      const user = await getCurrentUser();
+      setAuthState({
+        isSignedIn: !!user,
+        userName: user?.username || null,
+        userId: user?.uuid || null,
+      });
+      return !!user;
+    } catch {
+      setAuthState(DEFAULT_AUTH_STATE);
+      return false;
+    }
+  };
 
-        setAuthState({
-          isSignedIn: !!  user,
-          userName: user?.username || null,
-          userId: user?.uuid || null,
+  useEffect(() => {
+    refreshAuth();
+  }, []);
+
+  const signIn = async () => {
+    await puterSignIn();
+    return await refreshAuth();
+  };
+
+  const signOut = async () => {
+    puterSignOut();
+    return await refreshAuth();
+  };
+
+  const openUpload = () => {
+    // If not signed in, trigger sign in first
+    if (!authState.isSignedIn) {
+      signIn()
+        .then((success) => {
+          if (success) setIsUploadOpen(true);
+        })
+        .catch(() => {
+          // Sign-in cancelled or failed — silently ignore
         });
-
-        return !!user;
-      }catch(error) {
-        setAuthState(DEFAULT_AUTH_STATE);
-        return false
-      }
+      return;
     }
+    setIsUploadOpen(true);
+  };
 
-    useEffect(() => {
-      refreshAuth();
-    }, []);
+  const closeUpload = () => setIsUploadOpen(false);
 
-    const signIn = async () => {
-      await puterSignIn();
-      return await refreshAuth();
-    }
+  const context: AuthContext = {
+    ...authState,
+    refreshAuth,
+    signIn,
+    signOut,
+    openUpload,
+    closeUpload,
+    isUploadOpen,
+  };
 
-    const signOut = async () => {
-      puterSignOut();
-      return await refreshAuth();
-    }
-  return(
+  return (
     <main>
-        <Outlet context={{...authState, refreshAuth, signIn, signOut}} />
+      <Outlet context={context} />
+
+      {/* Global upload modal — available on every page */}
+      {isUploadOpen && <UploadModal onClose={closeUpload} />}
     </main>
-  ) 
-  
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

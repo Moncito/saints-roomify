@@ -320,7 +320,456 @@
     }
 }
 
-    /*  */
+/* ─────────────────────────────────────────
+   UPLOAD MODAL
+   Add this inside @layer components in app.css
+───────────────────────────────────────── */
+
+.upload-modal-backdrop {
+    @apply fixed inset-0 z-[200] flex items-end sm:items-center justify-center;
+    @apply bg-black/40 backdrop-blur-sm;
+    animation: backdrop-in 0.2s ease;
+}
+
+.upload-modal-panel {
+    @apply w-full sm:max-w-lg bg-white rounded-t-2xl sm:rounded-2xl;
+    @apply border border-zinc-200 shadow-2xl overflow-hidden;
+    animation: panel-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Header */
+.upload-modal-header {
+    @apply flex items-center justify-between px-6 py-5 border-b border-zinc-100;
+}
+
+.upload-modal-header-left {
+    @apply flex items-center gap-3;
+}
+
+.upload-modal-icon {
+    @apply w-10 h-10 rounded-xl bg-orange-50 text-primary flex items-center justify-center flex-shrink-0;
+}
+
+.upload-modal-header h2 {
+    @apply text-base font-serif font-bold text-black leading-tight;
+}
+
+.upload-modal-header p {
+    @apply text-xs text-zinc-400 font-mono mt-0.5;
+}
+
+.upload-modal-close {
+    @apply w-8 h-8 rounded-lg flex items-center justify-center;
+    @apply bg-transparent border-none cursor-pointer;
+    @apply text-zinc-400 hover:text-black hover:bg-zinc-100;
+    @apply transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed;
+}
+
+/* Body */
+.upload-modal-body {
+    @apply px-6 py-6;
+}
+
+/* Dropzone */
+.upload-modal-dropzone {
+    @apply relative flex flex-col items-center justify-center;
+    @apply h-52 rounded-xl border-2 border-dashed border-zinc-200;
+    @apply bg-zinc-50 cursor-pointer overflow-hidden;
+    @apply transition-all duration-200;
+    @apply hover:border-primary hover:bg-orange-50/40;
+}
+
+.upload-modal-dropzone.is-dragging {
+    @apply border-primary bg-orange-50 scale-[1.01];
+}
+
+.upload-modal-input {
+    @apply absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10;
+}
+
+.upload-modal-drop-icon {
+    @apply w-14 h-14 rounded-2xl bg-white border border-zinc-200 shadow-sm;
+    @apply flex items-center justify-center text-zinc-400 mb-4;
+    @apply transition-all duration-200;
+}
+
+.upload-modal-dropzone:hover .upload-modal-drop-icon,
+.upload-modal-dropzone.is-dragging .upload-modal-drop-icon {
+    @apply border-primary text-primary bg-orange-50;
+}
+
+.upload-modal-drop-title {
+    @apply text-sm font-semibold text-zinc-700 mb-1;
+}
+
+.upload-modal-drop-sub {
+    @apply text-xs text-zinc-400;
+
+    span {
+        @apply text-primary font-medium underline underline-offset-2 cursor-pointer;
+    }
+}
+
+/* Decorative dot grid inside dropzone */
+.upload-modal-dots {
+    @apply absolute inset-0 pointer-events-none opacity-30;
+    background-image: radial-gradient(circle, #d4d4d8 1px, transparent 1px);
+    background-size: 20px 20px;
+    z-index: 0;
+}
+
+.upload-modal-drop-icon,
+.upload-modal-drop-title,
+.upload-modal-drop-sub {
+    @apply relative z-[1];
+}
+
+/* ─────────────────────────────────────────
+       FEED PAGE
+       Paste this inside @layer components { }
+       just before the closing brace.
+    ───────────────────────────────────────── */
+
+    .feed-page {
+        @apply min-h-screen bg-background;
+    }
+
+    .feed-inner {
+        @apply max-w-7xl mx-auto px-4 md:px-6 pt-28 pb-24;
+    }
+
+    /* ── Header ── */
+    .feed-header {
+        @apply flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10;
+    }
+
+    .feed-header-left {
+        @apply flex items-center gap-3;
+    }
+
+    .feed-header-icon {
+        @apply w-9 h-9 rounded-xl bg-orange-50 text-primary flex items-center justify-center flex-shrink-0;
+    }
+
+    .feed-title {
+        @apply text-2xl font-serif font-bold text-black leading-tight;
+    }
+
+    .feed-subtitle {
+        @apply text-xs font-mono text-zinc-400 uppercase tracking-widest mt-0.5;
+    }
+
+    /* ── Sort tabs ── */
+    .feed-sort {
+        @apply flex items-center gap-1 bg-white border border-zinc-200 rounded-xl p-1 shadow-sm;
+    }
+
+    .feed-sort-tab {
+        @apply inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold uppercase tracking-wide;
+        @apply text-zinc-400 bg-transparent border-none cursor-pointer;
+        @apply transition-all duration-150;
+
+        &:hover {
+            @apply text-zinc-700 bg-zinc-50;
+        }
+
+        &.active {
+            @apply text-primary bg-orange-50 shadow-sm;
+        }
+    }
+
+    /* ── Masonry grid ── */
+    .feed-grid {
+        columns: 1;
+        column-gap: 1.25rem;
+
+        @media (min-width: 640px)  { columns: 2; }
+        @media (min-width: 1024px) { columns: 3; }
+        @media (min-width: 1280px) { columns: 4; }
+    }
+
+    /* ── Feed card ── */
+    .feed-card {
+        @apply bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm;
+        @apply hover:shadow-xl hover:-translate-y-0.5;
+        @apply transition-all duration-300 cursor-default;
+        break-inside: avoid;
+        margin-bottom: 1.25rem;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .feed-card-img {
+        @apply relative overflow-hidden bg-zinc-100;
+        aspect-ratio: 4 / 3;
+    }
+
+    .feed-card-photo {
+        @apply w-full h-full object-cover transition-transform duration-500;
+
+        .feed-card:hover & {
+            @apply scale-[1.02];
+        }
+    }
+
+    /* "Drag to compare" hint */
+    .feed-card-compare-hint {
+        @apply absolute bottom-2 left-1/2 -translate-x-1/2;
+        @apply bg-black/50 backdrop-blur-sm text-white rounded-full;
+        @apply px-2.5 py-1 text-[10px] font-mono tracking-wide;
+        @apply opacity-0 pointer-events-none transition-opacity duration-200;
+
+        .feed-card:hover & {
+            @apply opacity-100;
+        }
+    }
+
+    /* Remix badge on image */
+    .feed-card-remix-badge {
+        @apply absolute top-2.5 left-2.5 inline-flex items-center gap-1;
+        @apply bg-white/90 backdrop-blur-sm border border-zinc-200 rounded-full;
+        @apply px-2 py-0.5 text-[10px] font-bold text-zinc-600 uppercase tracking-wide shadow-sm;
+    }
+
+    /* Card body */
+    .feed-card-body {
+        @apply px-4 py-3.5 flex flex-col gap-2;
+    }
+
+    .feed-card-author {
+        @apply flex items-center gap-1.5 flex-wrap;
+    }
+
+    .feed-card-avatar {
+        @apply w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center;
+        @apply text-[8px] font-bold tracking-wide flex-shrink-0;
+    }
+
+    .feed-card-username {
+        @apply text-xs font-semibold text-zinc-700;
+    }
+
+    .feed-card-dot {
+        @apply text-zinc-300 text-xs;
+    }
+
+    .feed-card-time {
+        @apply flex items-center gap-1 text-[10px] font-mono text-zinc-400;
+    }
+
+    .feed-card-title {
+        @apply text-sm font-serif font-bold text-black leading-snug;
+        @apply line-clamp-2;
+    }
+
+    /* Tags */
+    .feed-card-tags {
+        @apply flex flex-wrap gap-1;
+    }
+
+    .feed-card-tag {
+        @apply text-[10px] font-mono text-primary bg-orange-50 rounded-md px-1.5 py-0.5;
+    }
+
+    /* Actions */
+    .feed-card-actions {
+        @apply flex items-center gap-2 pt-1 border-t border-zinc-50;
+    }
+
+    .feed-card-upvote {
+        @apply inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg;
+        @apply bg-zinc-50 border border-zinc-200 text-zinc-500;
+        @apply text-xs font-bold cursor-pointer;
+        @apply hover:bg-orange-50 hover:border-orange-200 hover:text-primary;
+        @apply transition-all duration-150 active:scale-95;
+
+        &.voted {
+            @apply bg-orange-50 border-orange-200 text-primary;
+        }
+    }
+
+    .feed-card-remix-btn {
+        @apply inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg;
+        @apply bg-transparent border border-zinc-200 text-zinc-400;
+        @apply text-xs font-semibold cursor-pointer;
+        @apply hover:bg-zinc-50 hover:text-zinc-700 hover:border-zinc-300;
+        @apply transition-all duration-150 active:scale-95 ml-auto;
+    }
+
+    /* ── Skeleton ── */
+    .feed-skeleton {
+        @apply bg-white border border-zinc-100 rounded-2xl overflow-hidden;
+        break-inside: avoid;
+        margin-bottom: 1.25rem;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .feed-skeleton-img {
+        @apply bg-zinc-100;
+        aspect-ratio: 4 / 3;
+        animation: feed-shimmer 1.6s ease-in-out infinite;
+    }
+
+    .feed-skeleton-body {
+        @apply flex items-center gap-3 px-4 py-3.5;
+    }
+
+    .feed-skeleton-avatar {
+        @apply w-5 h-5 rounded-full bg-zinc-100 flex-shrink-0;
+        animation: feed-shimmer 1.6s ease-in-out infinite;
+    }
+
+    .feed-skeleton-lines {
+        @apply flex flex-col gap-2 flex-1;
+    }
+
+    .feed-skeleton-line {
+        @apply h-2.5 rounded-full bg-zinc-100;
+        animation: feed-shimmer 1.6s ease-in-out infinite;
+
+        &.feed-skeleton-line--wide   { @apply w-3/4; }
+        &.feed-skeleton-line--narrow { @apply w-1/2; }
+    }
+
+    @keyframes feed-shimmer {
+        0%, 100% { opacity: 1;   }
+        50%       { opacity: 0.4; }
+    }
+
+    /* ── Empty state ── */
+    .feed-empty {
+        @apply flex flex-col items-center justify-center text-center;
+        @apply py-24 px-6;
+    }
+
+    .feed-empty-svg {
+        @apply w-52 h-auto text-zinc-300 mb-8;
+    }
+
+    .feed-empty-title {
+        @apply text-3xl font-serif font-bold text-black mb-3;
+    }
+
+    .feed-empty-sub {
+        @apply text-sm text-zinc-500 leading-relaxed max-w-xs mb-8;
+    }
+
+    .feed-empty-cta {
+        @apply inline-flex items-center gap-2;
+        @apply bg-primary text-white border-none rounded-xl;
+        @apply px-6 py-3 text-sm font-bold uppercase tracking-wide;
+        @apply cursor-pointer shadow-md hover:bg-[#EA580C] hover:scale-[1.02];
+        @apply transition-all duration-150 active:scale-100 mb-5;
+    }
+
+    .feed-empty-stat {
+        @apply text-[11px] font-mono text-zinc-300 uppercase tracking-widest;
+    }
+
+    /* ── Infinite scroll loader ── */
+    .feed-loader {
+        @apply flex flex-col items-center justify-center py-12 gap-3;
+    }
+
+    .feed-loader-dots {
+        @apply flex items-center gap-1.5;
+
+        span {
+            @apply w-1.5 h-1.5 rounded-full bg-zinc-300 block;
+
+            &:nth-child(1) { animation: feed-dot 1.2s ease-in-out infinite 0s;    }
+            &:nth-child(2) { animation: feed-dot 1.2s ease-in-out infinite 0.2s;  }
+            &:nth-child(3) { animation: feed-dot 1.2s ease-in-out infinite 0.4s;  }
+        }
+    }
+
+    @keyframes feed-dot {
+        0%, 80%, 100% { transform: scale(0.8); opacity: 0.4; }
+        40%            { transform: scale(1.2); opacity: 1;   }
+    }
+
+    .feed-loader-end {
+        @apply text-xs font-mono text-zinc-300 uppercase tracking-widest;
+    }
+
+    .feed-loader-cta {
+        @apply text-primary underline underline-offset-2 cursor-pointer;
+        @apply bg-transparent border-none font-mono text-xs;
+        @apply hover:text-orange-600 transition-colors;
+    }
+
+/* Status states (uploading / success / error) */
+.upload-modal-status {
+    @apply flex flex-col items-center justify-center h-52 gap-2 text-center;
+}
+
+.upload-modal-status-icon {
+    @apply w-14 h-14 rounded-2xl flex items-center justify-center mb-2;
+
+    &.uploading {
+        @apply bg-orange-50 text-primary animate-pulse;
+    }
+
+    &.success {
+        @apply bg-green-50 text-green-500;
+    }
+
+    &.error {
+        @apply bg-red-50 text-red-500;
+    }
+}
+
+.upload-modal-status-title {
+    @apply text-sm font-semibold text-zinc-800 max-w-xs truncate;
+}
+
+.upload-modal-status-sub {
+    @apply text-xs text-zinc-400;
+}
+
+/* Progress bar */
+.upload-modal-progress {
+    @apply w-48 h-1.5 bg-zinc-100 rounded-full overflow-hidden mt-3;
+}
+
+.upload-modal-progress-bar {
+    @apply h-full bg-primary rounded-full transition-all duration-300 ease-out;
+}
+
+.upload-modal-progress-label {
+    @apply text-[10px] font-mono text-zinc-400 mt-1;
+}
+
+/* Retry button */
+.upload-modal-retry {
+    @apply mt-3 px-5 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200;
+    @apply text-sm font-medium text-zinc-700 border-none cursor-pointer;
+    @apply transition-all duration-150;
+}
+
+/* Footer */
+.upload-modal-footer {
+    @apply flex items-center justify-between px-6 py-3.5;
+    @apply border-t border-zinc-100 bg-zinc-50/60;
+
+    span {
+        @apply text-[10px] font-mono text-zinc-400 uppercase tracking-wide;
+    }
+}
+
+/* Animations */
+@keyframes backdrop-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes panel-in {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)     scale(1);   }
+}
+
+    /*  Auth Modal  */
     .auth-modal {
         @apply absolute inset-0 z-60 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4;
 
@@ -521,6 +970,47 @@
                     }
                 }
             }
+        }
+
+        /* "View Community Feed" button next to section heading */
+        .view-feed-btn {
+            @apply inline-flex items-center gap-1.5;
+            @apply bg-transparent border border-zinc-200 rounded-lg;
+            @apply px-4 py-2 text-xs font-semibold text-zinc-500;
+            @apply cursor-pointer hover:text-black hover:border-zinc-300 hover:bg-zinc-50;
+            @apply transition-all duration-150;
+        }
+
+        /* Skeleton cards for loading state */
+        .project-card--skeleton {
+            @apply pointer-events-none;
+        }
+
+        .preview--skeleton {
+            @apply bg-zinc-100;
+            aspect-ratio: 4 / 3;
+            animation: home-shimmer 1.6s ease-in-out infinite;
+        }
+
+        .skeleton-line {
+            @apply h-2.5 rounded-full bg-zinc-100 mb-2;
+            animation: home-shimmer 1.6s ease-in-out infinite;
+
+            &.skeleton-line--wide   { @apply w-3/4; }
+            &.skeleton-line--narrow { @apply w-1/2; }
+        }
+
+        @keyframes home-shimmer {
+            0%, 100% { opacity: 1;   }
+            50%       { opacity: 0.4; }
+        }
+
+        /* Empty state CTA button */
+        .empty-cta {
+            @apply mt-4 inline-flex items-center gap-2;
+            @apply bg-primary text-white border-none rounded-lg;
+            @apply px-5 py-2.5 text-sm font-bold cursor-pointer;
+            @apply hover:bg-[#EA580C] transition-all duration-150;
         }
 
         .projects {
