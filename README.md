@@ -1,4 +1,4 @@
-# 🏠 Roomify
+# Roomify
 
 > **AI-Powered Interior Design Visualization** — Transform 2D floor plans into photorealistic 3D renderings in seconds.
 
@@ -12,7 +12,7 @@
 
 ---
 
-## ✨ What is Roomify?
+##What is Roomify?
 
 **Roomify** is a full-stack web application that uses **Google Gemini AI** to convert uploaded 2D floor plan images into stunning, photorealistic top-down 3D architectural renderings. Powered by the **Puter cloud platform**, it offers seamless authentication, cloud file storage, and one-click hosting for every generated design.
 
@@ -20,24 +20,24 @@ Whether you're an architect, interior designer, or homeowner, Roomify bridges th
 
 ---
 
-## 🚀 Features
+## Features
 
 | Feature                      | Description                                                                            |
 | ---------------------------- | -------------------------------------------------------------------------------------- |
-| 📸 **Floor Plan Upload**     | Drag-and-drop or click to upload JPG, PNG, or WebP images up to 50 MB                  |
-| 🤖 **AI Rendering**          | One-click conversion to photorealistic 3D top-down renders via Google Gemini 2.5 Flash |
-| 👁️ **Before / After Slider** | Interactive comparison view to inspect original and rendered images side by side       |
-| 💾 **Project Management**    | Create, save, list, and reload design projects at any time                             |
-| 👤 **Authentication**        | Secure sign-in / sign-out powered by Puter.js                                          |
-| 🌐 **Auto-Hosting**          | Generated renders are automatically hosted on a public Puter subdomain                 |
-| ⬇️ **Export**                | Download any rendered image as a PNG file with one click                               |
-| ⚡ **SSR + HMR**             | Server-side rendering with instant hot module replacement in development               |
-| 🔒 **Type-Safe**             | Fully written in TypeScript with strict mode enabled                                   |
-| 📱 **Responsive UI**         | Clean, modern interface built with TailwindCSS                                         |
+| **Floor Plan Upload**     | Drag-and-drop or click to upload JPG, PNG, or WebP images up to 50 MB                  |
+| **AI Rendering**          | One-click conversion to photorealistic 3D top-down renders via Google Gemini 2.5 Flash |
+| **Before / After Slider** | Interactive comparison view to inspect original and rendered images side by side       |
+| **Project Management**    | Create, save, list, and reload design projects at any time                             |
+| **Authentication**        | Secure sign-in / sign-out powered by Puter.js                                          |
+| **Auto-Hosting**          | Generated renders are automatically hosted on a public Puter subdomain                 |
+| **Export**                | Download any rendered image as a PNG file with one click                               |
+| **SSR + HMR**             | Server-side rendering with instant hot module replacement in development               |
+| **Type-Safe**             | Fully written in TypeScript with strict mode enabled                                   |
+| **Responsive UI**         | Clean, modern interface built with TailwindCSS                                         |
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -66,7 +66,7 @@ Whether you're an architect, interior designer, or homeowner, Roomify bridges th
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 saints-roomify/
@@ -141,7 +141,7 @@ The app will be available at **`http://localhost:5173`** with hot module replace
 
 ---
 
-## 🏗️ Building for Production
+## Building for Production
 
 ```bash
 npm run build
@@ -163,7 +163,7 @@ npm run start
 
 ---
 
-## 🐳 Docker Deployment
+## Docker Deployment
 
 Build and run the application in a container:
 
@@ -194,7 +194,7 @@ The Docker image uses a **multi-stage build** (Alpine-based Node 20) to keep the
 
 ---
 
-## 🔌 API Reference
+## API Reference
 
 Project data is managed through a **Puter Worker** that exposes three endpoints:
 
@@ -220,7 +220,7 @@ puter.workers.exec(); // Execute serverless worker functions
 
 ---
 
-## 🧠 How It Works
+## How It Works
 
 ```
 User uploads a floor plan (JPG/PNG/WebP)
@@ -247,7 +247,7 @@ User can compare, share, or download the rendered image
 
 ---
 
-## 🔑 Key Configuration
+## Key Configuration
 
 | Constant                      | Value          | Description                         |
 | ----------------------------- | -------------- | ----------------------------------- |
@@ -258,7 +258,7 @@ User can compare, share, or download the rendered image
 
 ---
 
-## 🧪 Type Checking
+## Type Checking
 
 Run TypeScript type validation:
 
@@ -270,7 +270,7 @@ This runs `react-router typegen` followed by `tsc` to validate all types across 
 
 ---
 
-## 📦 Scripts Reference
+## Scripts Reference
 
 | Script      | Command                                      | Description                  |
 | ----------- | -------------------------------------------- | ---------------------------- |
@@ -281,7 +281,7 @@ This runs `react-router typegen` followed by `tsc` to validate all types across 
 
 ---
 
-## 🚀 SaaS Upgrade Roadmap
+## SaaS Upgrade Roadmap
 
 The sections below describe exactly what needs to be built — and in what order — to evolve Roomify from an experimental single-user app into a commercially viable SaaS product. The core rendering and Puter integration code is **unchanged**; each phase layers new capability on top.
 
@@ -422,7 +422,7 @@ Puter Auth             Clerk or Auth.js              Owned identity layer
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Here's how to get started:
 
@@ -443,5 +443,5 @@ This project is open source. See the repository for license details.
 ---
 
 <p align="center">
-  Built with ❤️ using <a href="https://reactrouter.com/">React Router</a>, <a href="https://puter.com/">Puter</a>, and <a href="https://deepmind.google/technologies/gemini/">Google Gemini</a>
+  Built using <a href="https://reactrouter.com/">React Router</a>, <a href="https://puter.com/">Puter</a>, and <a href="https://deepmind.google/technologies/gemini/">Google Gemini</a>
 </p>
