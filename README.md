@@ -12,7 +12,7 @@
 
 ---
 
-##What is Roomify?
+## What is Roomify?
 
 **Roomify** is a full-stack web application that uses **Google Gemini AI** to convert uploaded 2D floor plan images into stunning, photorealistic top-down 3D architectural renderings. Powered by the **Puter cloud platform**, it offers seamless authentication, cloud file storage, and one-click hosting for every generated design.
 
