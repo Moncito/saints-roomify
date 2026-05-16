@@ -1,4 +1,4 @@
-# Roomify
+# Roomify 2.0
 
 > **AI-Powered Interior Design Visualization** — Transform 2D floor plans into photorealistic 3D renderings in seconds.
 
