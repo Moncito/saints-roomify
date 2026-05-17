@@ -1,6 +1,6 @@
 # Roomify 2.0
 
-> **AI-Powered Interior Design Visualization** — Transform 2D floor plans into photorealistic 3D renderings in seconds.
+> **AI-Powered Interior Design Visualization** — Transform 2D floor plans into photorealistic 3D renderings in seconds/minutes
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
