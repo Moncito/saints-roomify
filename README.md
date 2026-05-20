@@ -98,7 +98,7 @@ saints-roomify/
 
 ---
 
-## ⚙️ Getting Started
+## Getting Started
 
 ### Prerequisites
 
