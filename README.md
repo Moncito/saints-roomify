@@ -436,7 +436,7 @@ Please make sure your code passes type checking (`npm run typecheck`) before sub
 
 ---
 
-## 📄 License
+## License
 
 This project is open source. See the repository for license details.
 
